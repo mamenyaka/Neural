@@ -6,7 +6,7 @@
  * Web: www.paraschopra.com
  * Comment: Use this code as you like, but please give me credit whenever I deserve it.
  *
- * Improved version by András Mamenyák, Roland Bamli
+ * Improved version by Andras Mamenyak, Roland Bamli
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

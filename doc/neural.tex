@@ -5,11 +5,12 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[magyar]{babel}
-%\sloppy
+\usepackage{listings}
+\lstset{language=C++}
 
-\author{Andr\'as~Mameny\'ak}
-\author{Roland~Bamli}
-\affil{Mérnök informatikus szak (BSc), Debreceni Egyetem}
+\author[1]{András~Mamenyák}
+\author[1]{Roland~Bamli}
+\affil[1]{Mérnök informatikus (BSc) szakos hallgató, Debreceni Egyetem}
 
 \title{Neurális hálózatok}
 
@@ -83,6 +84,69 @@ Működése alapján két fázisra lehet osztani, terjedésre (propagation) és 
   \label{backpropagation}
 \end{figure}
 
-\section{Conclusion}
+\section{Az algoritmus implementálása}
+Egy neurális háló beprogramozása sok időt vehet igénybe és fölösleges. Ezért egy, már készen levő neurális hálót fogunk alkalmazni a Barker kód teszteléséhez. A szerző az alábbi megjegyzéssel tette közzé a C++ forráskódot:
 
+\lstinputlisting{NEURALI.CPP}
+
+A kód önmagában nem működött, először fordítási hibát kaptunk, majd azt kijavítva ``segmentation fault'' hibával szállt el. A hiba forrása a ``Network'' osztály destruktora:
+
+\begin{lstlisting}
+\\ segmentation fault
+~Network()
+{
+  delete Layers;
+}
+
+\\ helyesen
+~Network()
+{
+  delete[] Layers;
+}
+\end{lstlisting}
+
+Természetesen több módosításra is szükség volt, hogy a célnak megfelelő neurális hálót kapjunk. 
+A Barker kód 11 bitet feleltet meg 1 bitnek, ezért a neurális hálónknak 11 bemeneti neuronja, 11 rejtett neuronja és 1 kimenei neuronja van.
+
+A végső forrás kód:
+
+\lstinputlisting{neural.cpp}
+
+\section{A program futtatása és a kimenet értelmzése}
+
+A program fordítása és futtatása az alábbi módon végezhető el:
+
+\lstset{language=Bash}
+\begin{lstlisting}
+andras@G53SW:~/Programs/Neural$ g++ neural.cpp -o neural
+andras@G53SW:~/Programs/Neural$ ./neural
+\end{lstlisting}
+
+\lstinputlisting{output}
+
+A neurális hálót
+
+\lstset{language=C++}
+\begin{lstlisting}
+  const int Niter = 10000;
+\end{lstlisting}
+iteráción keresztül ``tanítattjuk'', mindegyik esetben ugyanazt a
+\begin{lstlisting}
+  const int Ntrain = 256;
+\end{lstlisting}
+random bemeneti adatot és a hozzájuk tartozó kimeneti értéket tápláljuk a neurális hálóba. Ez alapján állítódnak be az egyes neuronokhoz tartozó súlyok, amik kezdetben random értékek voltak. Ezután az éles tesztben ráengedjük mind a $2^{11}$ esetet és amint a fenti kimenetben látható, csupán 15 esetben lépte át a kimenet értéke a $0.5$-öt. A várt $11100010010$ ($1811$)-as értékre kaptuk a legjobb eredményt, $0.987942$-t. Ebből jól látható, hogy a neurális hálónk megfelelően működik, megtanulta melyik a Barker kód, és csak nagyjából 1 bitben különböző bemenetekre ad magasabb kimeneti értéket.
+
+\section{Az algoritmus finomhangolása}
+Sok állítható paraméterrel rendelkezik az algoritmusunk, ezért számos beállítással kipróbáltuk. A cél az volt, hogy a legnagyob pontosságot érjük el viszonylag rövid futási időn belül. Ha az iterációk számát növeltük, lineárisan növekedett a futási idő is, viszont az eredmény nem lett sokkal pontosabb. Ugyanez érvényes a bemeneti adatok számára is. A legnagyobb különbséget a rejtett neuronok számának növelése jelentette, így értük el optimális futási idő alatt
+
+\lstset{language=Bash}
+\begin{lstlisting}
+real	0m7.484s
+user	0m7.463s
+sys	0m0.014s
+\end{lstlisting}
+
+a megfelelő pontosságot.
+
+\section{Conclusion}
 \end{document}
