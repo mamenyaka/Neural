@@ -19,12 +19,12 @@
 #include <iostream>
 #include <list>
 #include <iterator>
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
 
 void kiir(std::list<std::string> list, std::ostream& out)
 {
-  for (auto item : list)
-    out << "\"" << item << "\" ";
+  std::copy(list.begin(), list.end(), std::ostream_iterator<std::string>(out, " "));
   out << "\n";
 }
 
