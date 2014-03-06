@@ -51,26 +51,12 @@ int main()
   kiir(b, std::cout);
   std::cout << "\n";
 
-  std::list<std::string>::iterator ita = a.begin(), itb = b.begin();
-
-  while (ita != a.end() && itb != b.end())
-  {
-    std::cout << *ita << " - " << *itb << " " << (*ita).compare((*itb)) << "\n";
-    ita++;
-    itb++;
-  }
+  for (auto item : a)
+    std::cout << "\"" << item << "\" " << item.compare("spam") << "\n";
+  std::cout << "\n";
   
-  while (ita != a.end())
-  {
-    std::cout << *ita << " - null 0" << "\n";
-    ita++;
-  }
-  
-  while (itb != b.end())
-  {
-    std::cout << "null - " << *itb << " 0" << "\n";
-    itb++;
-  }    
+  for (auto item : b)
+    std::cout << "\"" << item << "\" " << item.compare("spam") << "\n";
 
   return 0;
 }
