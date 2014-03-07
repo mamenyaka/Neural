@@ -18,12 +18,12 @@
 #include <string>
 #include <iostream>
 #include <list>
-#include <math.h>
+#include <cmath>
 #include <iterator>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 
-void kiir(std::list<std::string> list, std::ostream& out)
+void kiir(const std::list<std::string> list, std::ostream& out)
 {
   std::copy(list.begin(), list.end(), std::ostream_iterator<std::string>(out, " "));
   out << "\n";
@@ -41,31 +41,35 @@ void beolvas(std::list<std::string>& list)
   list.pop_front();
 }
 
-int minimum(int a, int b, int c)
+int minimum(const int a, const int b, const int c)
 {
-  return fmin(fmin(a, b),c);
+  return std::min<int>(std::min<int>(a, b), c);
 }
 
-int LevenshteinDistance(std::string s, int len_s, std::string t, int len_t)
+int LevenshteinDistance(const std::string s, const int len_s,
+                        const std::string t, const int len_t)
 {
-  /* base case: empty strings */
+  // base case: empty strings
   if (len_s == 0) return len_t;
   if (len_t == 0) return len_s;
 
-  /* test if last characters of the strings match */
+  // test if last characters of the strings match
   int cost;
-  if (s[len_s-1] == t[len_t-1]) cost = 0;
-  else                          cost = 1;
+  if (s.at(len_s-1) == t.at(len_t-1))
+    cost = 0;
+  else
+    cost = 1;
 
-  /*return minimum of delete char from s, delete char from t, and delete char from both*/
+  // return minimum of delete char from s, delete char from t, and delete char from both
   return minimum(LevenshteinDistance(s, len_s - 1, t, len_t    ) + 1,
                  LevenshteinDistance(s, len_s    , t, len_t - 1) + 1,
                  LevenshteinDistance(s, len_s - 1, t, len_t - 1) + cost);
 }
+
 int main()
 {
   std::list<std::string> a, b;
-  std::string spam ("rikkant");
+  const std::string spam ("rikkant");
 
   beolvas(a);
   beolvas(b);
