@@ -18,6 +18,7 @@
 #include <string>
 #include <iostream>
 #include <list>
+#include <math.h>
 #include <iterator>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
@@ -40,9 +41,31 @@ void beolvas(std::list<std::string>& list)
   list.pop_front();
 }
 
+int minimum(int a, int b, int c)
+{
+  return fmin(fmin(a, b),c);
+}
+
+int LevenshteinDistance(std::string s, int len_s, std::string t, int len_t)
+{
+  /* base case: empty strings */
+  if (len_s == 0) return len_t;
+  if (len_t == 0) return len_s;
+
+  /* test if last characters of the strings match */
+  int cost;
+  if (s[len_s-1] == t[len_t-1]) cost = 0;
+  else                          cost = 1;
+
+  /*return minimum of delete char from s, delete char from t, and delete char from both*/
+  return minimum(LevenshteinDistance(s, len_s - 1, t, len_t    ) + 1,
+                 LevenshteinDistance(s, len_s    , t, len_t - 1) + 1,
+                 LevenshteinDistance(s, len_s - 1, t, len_t - 1) + cost);
+}
 int main()
 {
   std::list<std::string> a, b;
+  std::string spam ("rikkant");
 
   beolvas(a);
   beolvas(b);
@@ -51,12 +74,12 @@ int main()
   kiir(b, std::cout);
   std::cout << "\n";
 
-  for (auto item : a)
-    std::cout << "\"" << item << "\" " << item.compare("spam") << "\n";
+for (auto item : a)
+    std::cout << "\"" << item << "\" " << LevenshteinDistance(item, item.length(), spam, spam.length()) << "\n";
   std::cout << "\n";
-  
-  for (auto item : b)
-    std::cout << "\"" << item << "\" " << item.compare("spam") << "\n";
+
+for (auto item : b)
+    std::cout << "\"" << item << "\" " << LevenshteinDistance(item, item.length(), spam, spam.length()) << "\n";
 
   return 0;
 }
