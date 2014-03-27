@@ -258,9 +258,9 @@ private:
 int main()
 {
   const int Niter = 10000;
-  const int Nneuron = 11;
-  const int Ntrain = 256;
-  const int Ntest = pow(2, Nneuron);
+  const int Nneuron = 11;  // TODO
+  const int Ntrain = 111;  // TODO
+  const int Ntest = 1111;  // TODO
   const int layer[3] = {Nneuron, Nneuron, 1};  // input, hidden, output
 
   Network network;
@@ -269,25 +269,8 @@ int main()
 
   std::cout << "Start training.\n\n";
 
-  double train_input[Ntrain][layer[0]];
-  double train_output[Ntrain][layer[2]];
-
-  // 11100010010 - 1811
-  train_input[0][0] = train_input[0][1] = train_input[0][2] = train_input[0][6] = train_input[0][9] = 1;
-  train_input[0][3] = train_input[0][4] = train_input[0][5] = train_input[0][7] = train_input[0][8] = train_input[0][10] = 0;
-
-  for (int i = 1; i < Ntrain; i++)
-    for (int j = 0; j < layer[0]; j++)
-      train_input[i][j] = (double) (rand()%2);
-
-  for (int i = 0; i < Ntrain; i++)
-  {
-    if (train_input[i][0] + train_input[i][1] + train_input[i][2] + train_input[i][6] + train_input[i][9] == 5 &&
-        train_input[i][3] + train_input[i][4] + train_input[i][5] + train_input[i][7] + train_input[i][8] + train_input[i][10] == 0)
-      train_output[i][0] = 1;
-    else
-      train_output[i][0] = 0;
-  }
+  double train_input[Ntrain][layer[0]];  // TODO
+  double train_output[Ntrain][layer[2]];  // TODO
 
   std::cout << "Number of training iterations: " << Niter;
 
@@ -300,28 +283,9 @@ int main()
 
   std::cout << "\nStart testing.\n";
 
-  double test_input[Ntest][layer[0]];
-  double test_output[layer[2]];
+  double test_input[Ntest][layer[0]];  // TODO
+  double test_output[layer[2]];  // TODO
   int db = 0;
-
-  for (int i = 0; i < Ntest; i++)
-  {
-    int tmp = i;
-    int j = Nneuron - 1;
-
-    while (tmp > 0)
-    {
-      test_input[i][j] = tmp%2;
-      tmp /= 2;
-      j--;
-    }
-
-    while (j > 0)
-    {
-      test_input[i][j] = 0;
-      j--;
-    }
-  }
 
   for (int i = 0; i < Ntest; i++)
   {
@@ -345,8 +309,6 @@ int main()
   }
 
   std::cout << "\nEnd testing.\n";
-
-  std::cout << "\nNumber of positive output: " << db << "\n";
 
   return 0;
 }
