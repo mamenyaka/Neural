@@ -32,6 +32,7 @@
 #include <string>
 #include <cctype>
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <cmath>
 #include <iterator>
@@ -45,31 +46,37 @@ void kiir(const std::list<T> list, const char *s)
   std::cout << "\n";
 }
 
-bool beolvas(std::list<std::string>& list)
+int beolvas(std::list<std::string>& list, std::ifstream& be)
 {
   std::string line;
   bool mail = false;
   bool spam;
-
-  do
+  
+  while (!mail)
   {
-    std::getline(std::cin, line);
+    if (be.eof())
+      return -1;
+
+    std::getline(be, line);
 
     if (!line.compare("BEGIN NORMAL"))
     {
       mail = true;
-      spam = false;
+      spam = 0;
     }
     else if (!line.compare("BEGIN SPAM"))
     {
       mail = true;
-      spam = true;
+      spam = 1;
     }
-  } while (!mail);
+  }
 
   while (mail)
   {
-    std::getline(std::cin, line);
+    if (be.eof())
+      return 42;
+
+    std::getline(be, line);
 
     if (!line.compare("END"))
       mail = false;
@@ -90,9 +97,9 @@ int get_Nsent(const std::list<std::string> list)
   int Nsent = 0;
   bool end_of_sentence = false;
 
-  for (std::string s : list)
+  for (auto s : list)
   {
-    for (char c : s)
+    for (auto c : s)
     {
       if (isblank(c) || c == '\n')
       {
@@ -121,11 +128,11 @@ void get_params(const std::list<std::string> list, std::list<float>& params)
   int Nchars = 0, Nalpha = 0, Ndigit = 0, Nwhitespace = 0, Nother = 0, Npunct = 0;
   int Nwords = 0, Nshort_words = 0, Nsent = get_Nsent(list);
 
-  for (std::string s : list)
+  for (auto s : list)
   {
     Nchars += s.length() + 1;
 
-    for (char c : s)
+    for (auto c : s)
     {
       if (isalpha(c))
         Nalpha++;
@@ -144,7 +151,7 @@ void get_params(const std::list<std::string> list, std::list<float>& params)
     words.pop_back();
     Nwords += words.size();
 
-    for (std::string w : words)
+    for (auto w : words)
       if (w.length() <= 2)
         Nshort_words++;
   }
@@ -164,14 +171,56 @@ void get_params(const std::list<std::string> list, std::list<float>& params)
 
 int main()
 {
-  std::list<std::string> mail;
-  std::list<float> params;
+  std::ifstream be("sample");
+  if (!be)
+  {
+    std::cerr << "Input file missing!\n";
+    return 1;
+  }
 
-  beolvas(mail);
-  get_params(mail, params);
+  std::list< std::pair< std::list<std::string>, std::list<float> > > spam, normal;
+  
+  while (1)
+  {
+    std::pair< std::list<std::string>, std::list<float> > m;
+    int s = beolvas(m.first, be);
 
-  kiir(mail, "\n");
-  kiir(params, ", ");
+    get_params(m.first, m.second);
+    
+    if (s == 0)
+    {
+      normal.push_back(m);
+    }
+    else if (s == 1)
+    {
+      spam.push_back(m);
+    }
+    else if (s == -1)
+    {
+      break;
+    }
+    else
+    {
+      std::cerr << "Input error!\n";
+      return 2;
+    }
+  }
+  
+  for (auto m : normal)
+  {
+    std::cout << "==============NORMAL==============\n";
+    kiir(m.first, "\n");
+    kiir(m.second, ", ");
+    std::cout << "\n";
+  }
+  
+  for (auto m : spam)
+  {
+    std::cout << "===============SPAM===============\n";
+    kiir(m.first, "\n");
+    kiir(m.second, ", ");
+    std::cout << "\n";
+  }
 
   return 0;
 }
