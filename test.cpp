@@ -45,12 +45,39 @@ void kiir(const std::list<T> list, const char *s)
   std::cout << "\n";
 }
 
-void beolvas(std::list<std::string>& list)
+bool beolvas(std::list<std::string>& list)
 {
   std::string line;
+  bool mail = false;
+  bool spam;
 
-  while (std::getline(std::cin, line))
-    list.push_back(line);
+  do
+  {
+    std::getline(std::cin, line);
+
+    if (!line.compare("BEGIN NORMAL"))
+    {
+      mail = true;
+      spam = false;
+    }
+    else if (!line.compare("BEGIN SPAM"))
+    {
+      mail = true;
+      spam = true;
+    }
+  } while (!mail);
+
+  while (mail)
+  {
+    std::getline(std::cin, line);
+
+    if (!line.compare("END"))
+      mail = false;
+    else
+      list.push_back(line);
+  }
+
+  return spam;
 }
 
 int is_punct(char c)
