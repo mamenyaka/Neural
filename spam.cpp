@@ -1,5 +1,6 @@
 /*
- * test.cpp
+ * spam.cpp
+ * András Mamenyák, Roland Bamli
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,6 +14,7 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 /*
@@ -29,29 +31,51 @@
  * Honore’s R measure
  */
 
-#include <string>
-#include <cctype>
-#include <iostream>
-#include <fstream>
-#include <list>
-#include <cmath>
-#include <iterator>
-#include <algorithm>
-#include <boost/algorithm/string.hpp>
+#include "spam.hpp"
+
+Spam::Spam() {}
+
+Spam::~Spam() {}
+
+void Spam::get_input(std::string input)
+{
+  std::ifstream be(input);
+  if (!be)
+    throw "\"" + input + "\" file missing!";
+
+  while (1)
+  {
+    std::pair< std::list<std::string>, std::list<float> > m;
+    int s = read(m.first, be);
+
+    get_params(m.first, m.second);
+
+    if (s == 0)
+      normal.push_back(m);
+    else if (s == 1)
+      spam.push_back(m);
+    else if (s == -1)
+      break;
+    else
+      throw "Input error!";
+  }
+
+  be.close();
+}
 
 template<typename T>
-void kiir(const std::list<T> list, const char *s)
+void Spam::print(const std::list<T>& list, const char *s)
 {
   std::copy(list.begin(), list.end(), std::ostream_iterator<T>(std::cout, s));
   std::cout << "\n";
 }
 
-int beolvas(std::list<std::string>& list, std::ifstream& be)
+int Spam::read(std::list<std::string>& list, std::ifstream& be)
 {
   std::string line;
   bool mail = false;
   bool spam;
-  
+
   while (!mail)
   {
     if (be.eof())
@@ -87,12 +111,12 @@ int beolvas(std::list<std::string>& list, std::ifstream& be)
   return spam;
 }
 
-int is_punct(char c)
+int Spam::is_punct(char c)
 {
   return (c == '.' || c == '?' || c == '!');
 }
 
-int get_Nsent(const std::list<std::string> list)
+int Spam::get_Nsent(const std::list<std::string>& list)
 {
   int Nsent = 0;
   bool end_of_sentence = false;
@@ -123,7 +147,7 @@ int get_Nsent(const std::list<std::string> list)
   return Nsent;
 }
 
-void get_params(const std::list<std::string> list, std::list<float>& params)
+void Spam::get_params(const std::list<std::string>& list, std::list<float>& params)
 {
   int Nchars = 0, Nalpha = 0, Ndigit = 0, Nwhitespace = 0, Nother = 0, Npunct = 0;
   int Nwords = 0, Nshort_words = 0, Nsent = get_Nsent(list);
@@ -167,60 +191,4 @@ void get_params(const std::list<std::string> list, std::list<float>& params)
   params.push_back((float) Nalpha/Nwords);  // avg. word length
   params.push_back((float) Nchars/Nsent);  // avg. sentence length in chars
   params.push_back((float) Nwords/Nsent);  // avg. sentence length in words
-}
-
-int main()
-{
-  std::ifstream be("sample");
-  if (!be)
-  {
-    std::cerr << "Input file missing!\n";
-    return 1;
-  }
-
-  std::list< std::pair< std::list<std::string>, std::list<float> > > spam, normal;
-  
-  while (1)
-  {
-    std::pair< std::list<std::string>, std::list<float> > m;
-    int s = beolvas(m.first, be);
-
-    get_params(m.first, m.second);
-    
-    if (s == 0)
-    {
-      normal.push_back(m);
-    }
-    else if (s == 1)
-    {
-      spam.push_back(m);
-    }
-    else if (s == -1)
-    {
-      break;
-    }
-    else
-    {
-      std::cerr << "Input error!\n";
-      return 2;
-    }
-  }
-  
-  for (auto m : normal)
-  {
-    std::cout << "==============NORMAL==============\n";
-    kiir(m.first, "\n");
-    kiir(m.second, ", ");
-    std::cout << "\n";
-  }
-  
-  for (auto m : spam)
-  {
-    std::cout << "===============SPAM===============\n";
-    kiir(m.first, "\n");
-    kiir(m.second, ", ");
-    std::cout << "\n";
-  }
-
-  return 0;
 }
