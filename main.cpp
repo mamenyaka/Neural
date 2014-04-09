@@ -22,14 +22,14 @@
 
 int main()
 {
-  const int Niter = 10000;
+  const int Niter = 100000;
   const int Nneuron = 11;
   const int Ntrain = 30;
-  const int Ntest = 10;
   const int layer[3] = {Nneuron, Nneuron, 1};  // input, hidden, output
 
   Network network;
   network.set_data(0.1, layer);
+
   Spam spam;
   try
   {
@@ -40,50 +40,63 @@ int main()
     std::cerr << ex << "\n";
     return 1;
   }
-
-
-  std::cout << "Start training.\n\n";
+  
+  std::cerr << "Start training.\n\n";
 
   double train_input[Ntrain][layer[0]];
   double train_output[Ntrain][layer[2]];
+  int Nspam = 20, Nnormal = 10;
+  
+  int i = 0;
+  while (spam.copy_train(train_input[i], train_output[i], 0) <= Nnormal)
+    i++;
+  while (spam.copy_train(train_input[i], train_output[i], 1) <= Nspam)
+    i++;
+  
+  /*
+  for (int i = 0; i < Ntrain; i++)
+  {
+    std::cout << train_output[i][0] << " : ";
+    for (int j = 0; j < layer[0]; j++)
+      std::cout << train_input[i][j] << " ";
+    std::cout << "\n";
+  }
+  */
 
-  std::cout << "Number of training iterations: " << Niter;
+  std::cerr << "Number of training iterations: " << Niter;
 
   for (int i = 0; i < Niter; i++)
     for (int j = 0; j < Ntrain; j++)
       network.train(train_input[j], train_output[j]);
 
-  std::cout << "\nEnd training.\n";
+  std::cerr << "\nEnd training.\n";
 
 
-  std::cout << "\nStart testing.\n";
+  std::cerr << "\nStart testing.\n";
 
-  double test_input[Ntest][layer[0]];
+  double test_input[layer[0]];
   double test_output[layer[2]];
-  int db = 0;
-
-  for (int i = 0; i < Ntest; i++)
+  
+  while (1)
   {
-    network.test(test_input[i], test_output);
+    std::cout << "\n\n";
+    int type = spam.copy_test(test_input);
+    if (type == -1)
+      break;
 
-    if (test_output[0] > 0.5)
-    {
-      db++;
-      std::cout << "\nCase number: " << db << "\n";
+    for (int j = 0; j < layer[0]; j++)
+      std::cout << test_input[j] << " ";
+    std::cout << "\n";
+    
+    network.test(test_input, test_output);
 
-      std::cout << "Input: ";
-      for (int j = 0; j < layer[0]; j++)
-        std::cout << test_input[i][j];
-      std::cout << " (" << i+1 << ")\n";
-
-      std::cout << "Output: ";
-      for (int j = 0; j < layer[2]; j++)
-        std::cout << test_output[j];
-      std::cout << "\n";
-    }
+    std::cout << "Output: ";
+    for (int j = 0; j < layer[2]; j++)
+      std::cout << test_output[j];
+    std::cout << "\n";
   }
 
-  std::cout << "\nEnd testing.\n";
+  std::cerr << "\nEnd testing.\n";
 
   return 0;
 }

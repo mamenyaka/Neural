@@ -59,8 +59,88 @@ void Spam::get_input(std::string input)
     else
       throw "Input error!";
   }
+  
+  std::cerr << normal.size() << " normal and " << spam.size() << " spam messages\n";
+  
+  it_normal = normal.begin();
+  it_spam = spam.begin();
 
   be.close();
+}
+
+
+/*
+ * copy params from list to array and set output
+ * type = 0 -> NORMAL
+ * type = 1 -> SPAM
+ * 
+ * Return value: Number of items processed in "type" list
+ */
+int Spam::copy_train(double *input, double *output, int type)
+{
+  if (std::distance(normal.end(), it_normal) == 0 || 
+    std::distance(spam.end(), it_spam) == 0)
+    return -1;
+
+  int i = 0;
+  std::list<float> &list = (type == 0) ? it_normal->second : it_spam->second;
+  for (auto p : list)
+    input[i++] = p;
+
+  output[0] = (double) type;
+
+  if (type == 0)
+  {
+    it_normal++;
+    return std::distance(normal.begin(), it_normal);
+  }
+  else
+  {
+    it_spam++;
+    return std::distance(spam.begin(), it_spam);
+  }
+}
+
+int Spam::copy_test(double *input)
+{
+  int type;
+
+  if (std::distance(normal.end(), it_normal) > 0)
+    type = 0;
+  else if (std::distance(spam.end(), it_spam) > 0)
+    type = 1;
+  else
+    return -1;
+  
+  if (type == 0)
+  {
+    std::cout << "==============NORMAL==============\n";
+    print(it_normal->first, "\n");
+  }
+  else
+  {
+    std::cout << "==============SPAM==============\n";
+    print(it_spam->first, "\n");
+  }
+  
+  std::list<float> &list = (type == 0) ? it_normal->second : it_spam->second;
+
+  int i = 0;  
+  for (auto p : list)
+    input[i++] = p;
+  
+  if (type == 0)
+  {
+    it_normal++;
+    return std::distance(normal.begin(), it_normal);
+  }
+  else
+  {
+    it_spam++;
+    return std::distance(spam.begin(), it_spam);
+  }
+  
+  return type;
 }
 
 template<typename T>

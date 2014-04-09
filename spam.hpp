@@ -50,9 +50,12 @@ public:
   Spam();
   ~Spam();
   void get_input(std::string input);
+  int copy_train(double *input, double *output, int type);
+  int copy_test(double *input);
 
 private:
-  std::list< std::pair< std::list<std::string>, std::list<float> > > spam, normal;
+  std::list< std::pair< std::list<std::string>, std::list<float> > > normal, spam;
+  std::list< std::pair< std::list<std::string>, std::list<float> > >::iterator it_normal, it_spam;
 
   template<typename T>
   void print(const std::list<T>& list, const char *s);
