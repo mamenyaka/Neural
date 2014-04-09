@@ -30,9 +30,10 @@ int main()
 
   Network network;
   network.set_data(0.1, layer);
+  Spam spam;
   try
   {
-    Spam spam("sample");
+    spam.get_input("sample");
   }
   catch (std::string ex)
   {
