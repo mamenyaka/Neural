@@ -68,7 +68,7 @@ public:
 
   void initialize(const int size);
   Neuron get_neuron(const int index) const;
-  void set_neuron(Neuron& neuron, const int index);
+  void set_neuron(Neuron neuron, const int index);
 
   Neuron *neuron;
 };
@@ -79,16 +79,51 @@ public:
   Network();
   ~Network();
 
-  void set_data(const double learning_rate, const int layer[]);
-  void test(const double input[], double output[]);
-  void train(const double input[], const double output[]);
+  /*
+   * Set various parameters of the net
+   */
+  void set_data(const double learning_rate, const int *layer);
+  
+  /*
+   * The standard backprop learning algorithm
+   *
+   * For output layer:
+   * Delta = (Target - Actual) * Actual * (1 - Actual)
+   *
+   * For hidden layer:
+   * Delta  = Actual * (1 - Actual) * Sum(Weight_from_current_to_next AND Delta_of_next)
+   *
+   * Weight += LearningRate * Delta * Input
+   */
+  void train(const double *input, const double *output);
+  
+  /*
+   * The real test
+   */
+  void test(const double *input, double *output);
 
 private:
+  /*
+   * Randomize weights and biases
+   */
   void randomize();
+  
+  /*
+   * Gives the output of the net
+   */
   void update_output();
+  
+  /*
+   * Sigmoid activation function
+   */
   double limiter(const double x) const;
-  double get_rand() const;
+
+  /*
+   * Calculate sum of weights * delta. Used in back prop.
+   */
   double sum_weight_delta(const int Nlayer) const;
+  
+  double get_rand() const;
 
   double learning_rate;
   Layer layer[3];

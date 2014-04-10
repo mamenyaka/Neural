@@ -37,15 +37,15 @@ Spam::Spam() {}
 
 Spam::~Spam() {}
 
-void Spam::get_input(std::string input)
+int Spam::get_input(std::string input)
 {
   std::ifstream be(input);
   if (!be)
-    throw "\"" + input + "\" file missing!";
+    throw (std::string) ("\"" + input + "\" file missing!");
 
   while (1)
   {
-    std::pair< std::list<std::string>, std::list<float> > m;
+    std::pair< std::list<std::string>, std::list<double> > m;
     int s = read(m.first, be);
 
     get_params(m.first, m.second);
@@ -57,90 +57,40 @@ void Spam::get_input(std::string input)
     else if (s == -1)
       break;
     else
-      throw "Input error!";
+      throw (std::string) "Input error!";
   }
-  
+
   std::cerr << normal.size() << " normal and " << spam.size() << " spam messages\n";
   
-  it_normal = normal.begin();
-  it_spam = spam.begin();
-
   be.close();
+  
+  return normal.size() + spam.size();
 }
 
-
-/*
- * copy params from list to array and set output
- * type = 0 -> NORMAL
- * type = 1 -> SPAM
- * 
- * Return value: Number of items processed in "type" list
- */
-int Spam::copy_train(double *input, double *output, int type)
-{
-  if (std::distance(normal.end(), it_normal) == 0 || 
-    std::distance(spam.end(), it_spam) == 0)
-    return -1;
-
-  int i = 0;
-  std::list<float> &list = (type == 0) ? it_normal->second : it_spam->second;
-  for (auto p : list)
-    input[i++] = p;
-
-  output[0] = (double) type;
-
-  if (type == 0)
-  {
-    it_normal++;
-    return std::distance(normal.begin(), it_normal);
-  }
-  else
-  {
-    it_spam++;
-    return std::distance(spam.begin(), it_spam);
-  }
-}
-
-int Spam::copy_test(double *input)
+int Spam::copy(double *input)
 {
   int type;
-
-  if (std::distance(normal.end(), it_normal) > 0)
+  if (it_normal != normal.end())
     type = 0;
-  else if (std::distance(spam.end(), it_spam) > 0)
+  else if (it_spam != spam.end())
     type = 1;
   else
-    return -1;
+    throw (std::string) "End reached";
   
-  if (type == 0)
-  {
-    std::cout << "==============NORMAL==============\n";
-    print(it_normal->first, "\n");
-  }
-  else
-  {
-    std::cout << "==============SPAM==============\n";
-    print(it_spam->first, "\n");
-  }
-  
-  std::list<float> &list = (type == 0) ? it_normal->second : it_spam->second;
+  Message::iterator &it = (type == 0) ? it_normal : it_spam;
 
   int i = 0;  
-  for (auto p : list)
+  for (auto p : it->second)
     input[i++] = p;
-  
-  if (type == 0)
-  {
-    it_normal++;
-    return std::distance(normal.begin(), it_normal);
-  }
-  else
-  {
-    it_spam++;
-    return std::distance(spam.begin(), it_spam);
-  }
+  it++;
   
   return type;
+}
+
+void Spam::set_begin()
+{
+  it_normal = normal.begin();
+  it_spam = spam.begin();
 }
 
 template<typename T>
@@ -227,7 +177,7 @@ int Spam::get_Nsent(const std::list<std::string>& list)
   return Nsent;
 }
 
-void Spam::get_params(const std::list<std::string>& list, std::list<float>& params)
+void Spam::get_params(const std::list<std::string>& list, std::list<double>& params)
 {
   int Nchars = 0, Nalpha = 0, Ndigit = 0, Nwhitespace = 0, Nother = 0, Npunct = 0;
   int Nwords = 0, Nshort_words = 0, Nsent = get_Nsent(list);
@@ -260,15 +210,15 @@ void Spam::get_params(const std::list<std::string>& list, std::list<float>& para
         Nshort_words++;
   }
 
-  params.push_back(Nchars);
-  params.push_back((float) Nalpha/Nchars);
-  params.push_back((float) Ndigit/Nchars);
-  params.push_back((float) Nwhitespace/Nchars);
-  params.push_back((float) Npunct/Nchars);
-  params.push_back((float) Nother/Nchars);
-  params.push_back(Nwords);
-  params.push_back(Nshort_words);
-  params.push_back((float) Nalpha/Nwords);  // avg. word length
-  params.push_back((float) Nchars/Nsent);  // avg. sentence length in chars
-  params.push_back((float) Nwords/Nsent);  // avg. sentence length in words
+  params.push_back((double) Nchars/10240.0);
+  params.push_back((double) Nalpha/Nchars);
+  params.push_back((double) Ndigit/Nchars);
+  params.push_back((double) Nwhitespace/Nchars);
+  params.push_back((double) Npunct/Nchars);
+  params.push_back((double) Nother/Nchars);
+  params.push_back((double) Nwords/Nchars);
+  params.push_back((double) Nshort_words/Nchars);
+  params.push_back(((double) Nalpha/Nwords)/Nchars);  // avg. word length
+  params.push_back(((double) Nchars/Nsent)/Nchars);  // avg. sentence length in chars
+  params.push_back(((double) Nwords/Nsent)/Nchars);  // avg. sentence length in words
 }

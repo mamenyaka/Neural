@@ -73,7 +73,7 @@ Neuron Layer::get_neuron(const int index) const
   return neuron[index];
 }
 
-void Layer::set_neuron(Neuron& neuron, const int index)
+void Layer::set_neuron(Neuron neuron, const int index)
 {
   this->neuron[index] = neuron;
 }
@@ -85,10 +85,7 @@ Network::Network()
 
 Network::~Network() {}
 
-/*
- * Set various parameters of the net
- */
-void Network::set_data(const double learning_rate, const int layer[])
+void Network::set_data(const double learning_rate, const int *layer)
 {
   this->learning_rate = learning_rate;
 
@@ -101,32 +98,7 @@ void Network::set_data(const double learning_rate, const int layer[])
   randomize();
 }
 
-/*
- * The real test
- */
-void Network::test(const double input[], double output[])
-{
-  for (int i = 0; i < neuron_per_layer[0]; i++)
-    layer[0].neuron[i].value = input[i];
-
-  update_output();
-
-  for (int i = 0; i < neuron_per_layer[2]; i++)
-    output[i] = layer[2].neuron[i].value;
-}
-
-/*
- * The standard backprop learning algorithm
- *
- * For output layer:
- * Delta = (Target - Actual) * Actual * (1 - Actual)
- *
- * For hidden layer:
- * Delta  = Actual * (1 - Actual) * Sum(Weight_from_current_to_next AND Delta_of_next)
- *
- * Weight += LearningRate * Delta * Input
- */
-void Network::train(const double input[], const double output[])
+void Network::train(const double *input, const double *output)
 {
   double Actual, Delta;
 
@@ -140,7 +112,7 @@ void Network::train(const double input[], const double output[])
     {
       Actual = layer[i].neuron[j].value;  // Actual value
 
-      if(i == 2)  // Output layer
+      if (i == 2)  // Output layer
       {
         Delta = (output[j] - Actual) * Actual * (1.0 - Actual);  // Function to compute error
         layer[i].neuron[j].delta = Delta;
@@ -158,9 +130,17 @@ void Network::train(const double input[], const double output[])
     }
 }
 
-/*
- * Randomize weights and biases
- */
+void Network::test(const double *input, double *output)
+{
+  for (int i = 0; i < neuron_per_layer[0]; i++)
+    layer[0].neuron[i].value = input[i];
+  
+  update_output();
+  
+  for (int i = 0; i < neuron_per_layer[2]; i++)
+    output[i] = layer[2].neuron[i].value;
+}
+
 void Network::randomize()
 {
   for (int i = 0; i < 3; i++)
@@ -179,9 +159,6 @@ void Network::randomize()
     }
 }
 
-/*
- * Gives the output of the net
- */
 void Network::update_output()
 {
   for (int i = 1; i < 3; i++)
@@ -195,22 +172,11 @@ void Network::update_output()
     }
 }
 
-/*
- * Sigmoid activation function
- */
 double Network::limiter(const double x) const
 {
   return 1.0/(1.0 + exp(-x));
 }
 
-double Network::get_rand() const
-{
-  return -1.0 + ((double) rand()/RAND_MAX)*2.0;
-}
-
-/*
- * Calculate sum of weights * delta. Used in back prop.
- */
 double Network::sum_weight_delta(const int Nlayer) const
 {
   double result = 0.0;
@@ -219,4 +185,9 @@ double Network::sum_weight_delta(const int Nlayer) const
     result += layer[Nlayer].neuron[Nlayer].dendrite[i].weight*layer[Nlayer+1].neuron[i].delta;
 
   return result;
+}
+
+double Network::get_rand() const
+{
+  return -1.0 + ((double) rand()/RAND_MAX)*2.0;
 }

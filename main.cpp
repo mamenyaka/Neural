@@ -24,16 +24,17 @@ int main()
 {
   const int Niter = 100000;
   const int Nneuron = 11;
-  const int Ntrain = 30;
   const int layer[3] = {Nneuron, Nneuron, 1};  // input, hidden, output
 
   Network network;
+  Spam spam;
+  
   network.set_data(0.1, layer);
 
-  Spam spam;
+  int Nmessage;
   try
   {
-    spam.get_input("sample");
+    Nmessage = spam.get_input("sample");
   }
   catch (std::string ex)
   {
@@ -43,51 +44,65 @@ int main()
   
   std::cerr << "Start training.\n\n";
 
-  double train_input[Ntrain][layer[0]];
-  double train_output[Ntrain][layer[2]];
-  int Nspam = 20, Nnormal = 10;
+  double train_input[Nmessage][layer[0]];
+  double train_output[Nmessage][layer[2]];
   
-  int i = 0;
-  while (spam.copy_train(train_input[i], train_output[i], 0) <= Nnormal)
-    i++;
-  while (spam.copy_train(train_input[i], train_output[i], 1) <= Nspam)
-    i++;
-  
-  /*
-  for (int i = 0; i < Ntrain; i++)
+  try
   {
-    std::cout << train_output[i][0] << " : ";
+    spam.set_begin();
+    for (int i = 0; i < Nmessage; i++)
+      train_output[i][0] = (double) spam.copy(train_input[i]);
+  }
+  catch (std::string ex)
+  {
+    std::cerr << ex << "\n";
+    return 1;
+  }
+  
+  for (int i = 0; i < Nmessage; i++)
+  {
+    std::cout << i << ": " << train_output[i][0] << " - ";
     for (int j = 0; j < layer[0]; j++)
       std::cout << train_input[i][j] << " ";
     std::cout << "\n";
   }
-  */
-
-  std::cerr << "Number of training iterations: " << Niter;
+  
+  std::cerr << "Number of training iterations: " << Niter << "\n";
 
   for (int i = 0; i < Niter; i++)
-    for (int j = 0; j < Ntrain; j++)
+    for (int j = 0; j < Nmessage; j++)
       network.train(train_input[j], train_output[j]);
 
   std::cerr << "\nEnd training.\n";
-
-
   std::cerr << "\nStart testing.\n";
+  spam.set_begin();
 
-  double test_input[layer[0]];
-  double test_output[layer[2]];
-  
-  while (1)
+  for (int i = 0; i < Nmessage; i++)
   {
-    std::cout << "\n\n";
-    int type = spam.copy_test(test_input);
-    if (type == -1)
-      break;
+    double test_input[layer[0]];
+    double test_output[layer[2]];
+    int type;
 
+    try
+    {
+      type = spam.copy(test_input);
+    }
+    catch (std::string ex)
+    {
+      std::cerr << ex << "\n";
+      return 1;
+    }
+    
+    std::cout << "\nInput: ";
+    if (type == 0)
+      std::cout << "NORMAL\n";
+    else
+      std::cout << "SPAM\n";
+    /*
     for (int j = 0; j < layer[0]; j++)
       std::cout << test_input[j] << " ";
     std::cout << "\n";
-    
+    */
     network.test(test_input, test_output);
 
     std::cout << "Output: ";
