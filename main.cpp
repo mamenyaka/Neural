@@ -98,11 +98,7 @@ int main()
       std::cout << "NORMAL\n";
     else
       std::cout << "SPAM\n";
-    /*
-    for (int j = 0; j < layer[0]; j++)
-      std::cout << test_input[j] << " ";
-    std::cout << "\n";
-    */
+
     network.test(test_input, test_output);
 
     std::cout << "Output: ";
