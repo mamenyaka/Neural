@@ -49,7 +49,6 @@ int main()
   
   try
   {
-    spam.set_begin();
     for (int i = 0; i < Nmessage; i++)
       train_output[i][0] = (double) spam.copy(train_input[i]);
   }

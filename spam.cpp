@@ -59,10 +59,11 @@ int Spam::get_input(std::string input)
     else
       throw (std::string) "Input error!";
   }
-
-  std::cerr << normal.size() << " normal and " << spam.size() << " spam messages\n";
   
   be.close();
+  set_begin();
+
+  std::cerr << normal.size() << " normal and " << spam.size() << " spam messages\n";
   
   return normal.size() + spam.size();
 }
