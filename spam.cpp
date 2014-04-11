@@ -39,14 +39,25 @@ Spam::~Spam() {}
 
 int Spam::get_input(std::string input)
 {
+  int s = 0;
   std::ifstream be(input);
+
   if (!be)
     throw (std::string) ("\"" + input + "\" file missing!");
 
-  while (1)
+  while (s != -1)
   {
     std::pair< std::list<std::string>, std::list<double> > m;
-    int s = read(m.first, be);
+    
+    try
+    {
+      s = read(m.first, be);
+    }
+    catch (std::string ex)
+    {
+      be.close();
+      throw (std::string) ("Input error! " + ex);
+    }
 
     get_params(m.first, m.second);
 
@@ -54,13 +65,10 @@ int Spam::get_input(std::string input)
       normal.push_back(m);
     else if (s == 1)
       spam.push_back(m);
-    else if (s == -1)
-      break;
-    else
-      throw (std::string) "Input error!";
   }
-
+  
   be.close();
+
   set_begin();
 
   std::cerr << normal.size() << " normal and " << spam.size() << " spam messages\n";
@@ -108,7 +116,7 @@ int Spam::read(std::list<std::string>& list, std::ifstream& be)
 {
   std::string line;
   bool mail = false;
-  bool spam;
+  int spam;
 
   while (!mail)
   {
@@ -132,7 +140,7 @@ int Spam::read(std::list<std::string>& list, std::ifstream& be)
   while (mail)
   {
     if (be.eof())
-      return 42;
+      throw (std::string) "Unexpected end of file";
 
     std::getline(be, line);
 

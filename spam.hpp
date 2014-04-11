@@ -60,7 +60,7 @@ public:
    * type = 0 -> NORMAL
    * type = 1 -> SPAM
    *
-   * Return value: type
+   * Return value: type of message procesed
    */
   int copy(double *input);
 
@@ -76,6 +76,10 @@ private:
 
   template<typename T>
   void print(const std::list<T>& list, const char *s);
+  
+  /*
+   * Return value: type of message read
+   */
   int read(std::list<std::string>& list, std::ifstream& be);
 
   int is_punct(char c);

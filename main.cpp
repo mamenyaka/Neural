@@ -82,12 +82,12 @@ int main()
 
   double test_input[Nmessage][layer[0]];
   double test_output[Nmessage][layer[2]];
-  double real_output[Nmessage][layer[2]];
+  int real_output[Nmessage];
 
   try
   {
     for (int i = 0; i < Nmessage; i++)
-      real_output[i][0] = (double) test.copy(test_input[i]);
+      real_output[i] = test.copy(test_input[i]);
   }
   catch (std::string ex)
   {
@@ -101,7 +101,7 @@ int main()
   std::cout << "\n";
   for (int i = 0; i < Nmessage; i++)
   {
-    std::cout << "Input: " << (real_output[i][0] == 0.0 ? "NORMAL" : "SPAM") << "\n";
+    std::cout << "Input: " << (real_output[i] == 0 ? "NORMAL" : "SPAM") << "\n";
     std::cout << "Output: " << test_output[i][0] << "\n\n";
   }
 
