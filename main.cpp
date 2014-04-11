@@ -34,7 +34,7 @@ int main()
   int Nmessage;
   try
   {
-    Nmessage = spam.get_input("sample");
+    Nmessage = spam.get_input("train");
   }
   catch (std::string ex)
   {
