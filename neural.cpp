@@ -134,9 +134,9 @@ void Network::test(const double *input, double *output)
 {
   for (int i = 0; i < neuron_per_layer[0]; i++)
     layer[0].neuron[i].value = input[i];
-  
+
   update_output();
-  
+
   for (int i = 0; i < neuron_per_layer[2]; i++)
     output[i] = layer[2].neuron[i].value;
 }

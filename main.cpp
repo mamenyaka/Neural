@@ -22,16 +22,17 @@
 
 int main()
 {
+  int Nmessage;
   const int Niter = 100000;
   const int Nneuron = 11;
   const int layer[3] = {Nneuron, Nneuron, 1};  // input, hidden, output
 
   Network network;
-  Spam train;
-  
   network.set_data(0.1, layer);
 
-  int Nmessage;
+  std::cerr << "Start training.\n";
+  Spam train;
+
   try
   {
     Nmessage = train.get_input("train");
@@ -41,12 +42,10 @@ int main()
     std::cerr << ex << "\n";
     return 1;
   }
-  
-  std::cerr << "Start training.\n\n";
 
   double train_input[Nmessage][layer[0]];
   double train_output[Nmessage][layer[2]];
-  
+
   try
   {
     for (int i = 0; i < Nmessage; i++)
@@ -57,25 +56,20 @@ int main()
     std::cerr << ex << "\n";
     return 1;
   }
-  
-  for (int i = 0; i < Nmessage; i++)
-  {
-    std::cout << i << ": " << train_output[i][0] << " - ";
-    for (int j = 0; j < layer[0]; j++)
-      std::cout << train_input[i][j] << " ";
-    std::cout << "\n";
-  }
-  
+
   std::cerr << "Number of training iterations: " << Niter << "\n";
 
   for (int i = 0; i < Niter; i++)
     for (int j = 0; j < Nmessage; j++)
       network.train(train_input[j], train_output[j]);
 
-  std::cerr << "\nEnd training.\n";
-  std::cerr << "\nStart testing.\n";
+  std::cerr << "End training.\n\n";
+
+  // ==============================================================================
+
+  std::cerr << "Start testing.\n";
   Spam test;
-  
+
   try
   {
     Nmessage = test.get_input("test");
@@ -86,37 +80,32 @@ int main()
     return 1;
   }
 
-  for (int i = 0; i < Nmessage; i++)
+  double test_input[Nmessage][layer[0]];
+  double test_output[Nmessage][layer[2]];
+  double real_output[Nmessage][layer[2]];
+
+  try
   {
-    double test_input[layer[0]];
-    double test_output[layer[2]];
-    int type;
-
-    try
-    {
-      type = test.copy(test_input);
-    }
-    catch (std::string ex)
-    {
-      std::cerr << ex << "\n";
-      return 1;
-    }
-    
-    std::cout << "\nInput: ";
-    if (type == 0)
-      std::cout << "NORMAL\n";
-    else
-      std::cout << "SPAM\n";
-
-    network.test(test_input, test_output);
-
-    std::cout << "Output: ";
-    for (int j = 0; j < layer[2]; j++)
-      std::cout << test_output[j];
-    std::cout << "\n";
+    for (int i = 0; i < Nmessage; i++)
+      real_output[i][0] = (double) test.copy(test_input[i]);
+  }
+  catch (std::string ex)
+  {
+    std::cerr << ex << "\n";
+    return 1;
   }
 
-  std::cerr << "\nEnd testing.\n";
+  for (int i = 0; i < Nmessage; i++)
+    network.test(test_input[i], test_output[i]);
+
+  std::cout << "\n";
+  for (int i = 0; i < Nmessage; i++)
+  {
+    std::cout << "Input: " << (real_output[i][0] == 0.0 ? "NORMAL" : "SPAM") << "\n";
+    std::cout << "Output: " << test_output[i][0] << "\n\n";
+  }
+
+  std::cerr << "End testing.\n";
 
   return 0;
 }

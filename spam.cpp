@@ -59,12 +59,12 @@ int Spam::get_input(std::string input)
     else
       throw (std::string) "Input error!";
   }
-  
+
   be.close();
   set_begin();
 
   std::cerr << normal.size() << " normal and " << spam.size() << " spam messages\n";
-  
+
   return normal.size() + spam.size();
 }
 
@@ -77,17 +77,17 @@ int Spam::copy(double *input)
     type = 1;
   else
     throw (std::string) "End reached";
-  
+
   Message::iterator &it = (type == 0) ? it_normal : it_spam;
 
-  //print<>(it->first, "\n");
-  //print<>(it->second, ",");
-  
+  //print(it->first, "\n");
+  //print(it->second, ", ");
+
   int i = 0;
   for (auto p : it->second)
     input[i++] = p;
   it++;
-  
+
   return type;
 }
 

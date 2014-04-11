@@ -83,7 +83,7 @@ public:
    * Set various parameters of the net
    */
   void set_data(const double learning_rate, const int *layer);
-  
+
   /*
    * The standard backprop learning algorithm
    *
@@ -96,7 +96,7 @@ public:
    * Weight += LearningRate * Delta * Input
    */
   void train(const double *input, const double *output);
-  
+
   /*
    * The real test
    */
@@ -107,12 +107,12 @@ private:
    * Randomize weights and biases
    */
   void randomize();
-  
+
   /*
    * Gives the output of the net
    */
   void update_output();
-  
+
   /*
    * Sigmoid activation function
    */
@@ -122,7 +122,7 @@ private:
    * Calculate sum of weights * delta. Used in back prop.
    */
   double sum_weight_delta(const int Nlayer) const;
-  
+
   double get_rand() const;
 
   double learning_rate;

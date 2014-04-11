@@ -49,35 +49,35 @@ class Spam
 public:
   Spam();
   ~Spam();
-  
+
   /*
    * Return value: Number of messages
    */
   int get_input(std::string input);
-  
+
   /*
    * copy params from list to array and set output
    * type = 0 -> NORMAL
    * type = 1 -> SPAM
-   * 
+   *
    * Return value: type
    */
   int copy(double *input);
-  
+
   /*
    * Reset iterators to begin of Messages
    */
   void set_begin();
-  
+
 private:
   typedef std::list< std::pair< std::list<std::string>, std::list<double> > > Message;
   Message normal, spam;
   Message::iterator it_normal, it_spam;
-  
+
   template<typename T>
   void print(const std::list<T>& list, const char *s);
   int read(std::list<std::string>& list, std::ifstream& be);
-  
+
   int is_punct(char c);
   int get_Nsent(const std::list<std::string>& list);
   void get_params(const std::list<std::string>& list, std::list<double>& params);
