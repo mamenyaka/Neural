@@ -80,7 +80,10 @@ int Spam::copy(double *input)
   
   Message::iterator &it = (type == 0) ? it_normal : it_spam;
 
-  int i = 0;  
+  //print<>(it->first, "\n");
+  //print<>(it->second, ",");
+  
+  int i = 0;
   for (auto p : it->second)
     input[i++] = p;
   it++;

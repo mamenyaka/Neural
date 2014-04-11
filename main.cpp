@@ -27,14 +27,14 @@ int main()
   const int layer[3] = {Nneuron, Nneuron, 1};  // input, hidden, output
 
   Network network;
-  Spam spam;
+  Spam train;
   
   network.set_data(0.1, layer);
 
   int Nmessage;
   try
   {
-    Nmessage = spam.get_input("train");
+    Nmessage = train.get_input("train");
   }
   catch (std::string ex)
   {
@@ -50,7 +50,7 @@ int main()
   try
   {
     for (int i = 0; i < Nmessage; i++)
-      train_output[i][0] = (double) spam.copy(train_input[i]);
+      train_output[i][0] = (double) train.copy(train_input[i]);
   }
   catch (std::string ex)
   {
@@ -74,7 +74,17 @@ int main()
 
   std::cerr << "\nEnd training.\n";
   std::cerr << "\nStart testing.\n";
-  spam.set_begin();
+  Spam test;
+  
+  try
+  {
+    Nmessage = test.get_input("test");
+  }
+  catch (std::string ex)
+  {
+    std::cerr << ex << "\n";
+    return 1;
+  }
 
   for (int i = 0; i < Nmessage; i++)
   {
@@ -84,7 +94,7 @@ int main()
 
     try
     {
-      type = spam.copy(test_input);
+      type = test.copy(test_input);
     }
     catch (std::string ex)
     {
