@@ -49,7 +49,7 @@ int main()
   try
   {
     for (int i = 0; i < Nmessage; i++)
-      train_output[i][0] = (double) train.copy(train_input[i]);
+      train_output[i][0] = (double) train.copy(train_input[i], i);
   }
   catch (std::string ex)
   {
@@ -87,7 +87,7 @@ int main()
   try
   {
     for (int i = 0; i < Nmessage; i++)
-      real_output[i] = test.copy(test_input[i]);
+      real_output[i] = test.copy(test_input[i], i);
   }
   catch (std::string ex)
   {
