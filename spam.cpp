@@ -68,6 +68,8 @@ int Spam::get_input(const std::string input)
     get_params(m);
     mails.push_back(std::make_pair(t, m));
   }
+  
+  normalise();
 
   std::cerr << db[0] << " normal and " << db[1] << " spam messages\n";
 
@@ -83,19 +85,27 @@ int Spam::copy(double *input, const int n)
   for (auto p : mails.at(n).second.second)
     input[i++] = p;
 
-  //print(mails.at(n).second.second, ", ");
-
   return mails.at(n).first;
 }
 
+void Spam::print_message(const int n)
+{
+  print(mails.at(n).second.first, "\n");
+}
+
+void Spam::print_params(const int n)
+{
+  print(mails.at(n).second.second, ", ");
+}
+
 template<typename T>
-void Spam::print(const std::list<T>& list, const char *s)
+void Spam::print(const std::vector<T>& list, const char *s)
 {
   std::copy(list.begin(), list.end(), std::ostream_iterator<T>(std::cout, s));
   std::cout << "\n";
 }
 
-int Spam::read(std::list<std::string>& m, std::ifstream& be)
+int Spam::read(std::vector<std::string>& m, std::ifstream& be)
 {
   std::string line;
   bool mail = false;
@@ -159,7 +169,7 @@ void Spam::get_params(Message& m)
         Nother++;
     }
 
-    std::list<std::string> words;
+    std::vector<std::string> words;
     boost::algorithm::split(words, s, boost::algorithm::is_any_of(";,.!? "), boost::algorithm::token_compress_on);
     words.pop_back();
     Nwords += words.size();
@@ -169,17 +179,45 @@ void Spam::get_params(Message& m)
         Nshort_words++;
   }
 
-  m.second.push_back((double) Nchars/10240.0);
   m.second.push_back((double) Nalpha/Nchars);
   m.second.push_back((double) Ndigit/Nchars);
   m.second.push_back((double) Nwhitespace/Nchars);
   m.second.push_back((double) Npunct/Nchars);
   m.second.push_back((double) Nother/Nchars);
-  m.second.push_back((double) Nwords/Nchars);
-  m.second.push_back((double) Nshort_words/Nchars);
-  m.second.push_back(((double) Nalpha/Nwords)/Nchars);  // avg. word length
-  m.second.push_back(((double) Nchars/Nsent)/Nchars);  // avg. sentence length in chars
-  m.second.push_back(((double) Nwords/Nsent)/Nchars);  // avg. sentence length in words
+  // need to be normalised
+  m.second.push_back((double) Nchars);
+  m.second.push_back((double) Nwords);
+  m.second.push_back((double) Nshort_words);
+  m.second.push_back((double) Nalpha/Nwords);  // avg. word length
+  m.second.push_back((double) Nchars/Nsent);  // avg. sentence length in chars
+  m.second.push_back((double) Nwords/Nsent);  // avg. sentence length in words
+}
+
+void Spam::normalise()
+{
+  for (int i = 0; i < Nparams; i++)
+  {
+    double max = 0.0, min = 1000000.0;
+
+    for (auto m : mails)
+    {
+      double p = m.second.second.at(i);
+    
+      if (p > max)
+        max = p;
+      
+      if (p < min)
+        min = p;
+    }
+    
+    if (max < 1.0)
+      continue;
+    
+    for (auto& m : mails)
+    {
+      m.second.second.at(i) = (m.second.second.at(i) - min)/(max - min);
+    }
+  }
 }
 
 int Spam::is_punct(const char c) const
@@ -187,7 +225,7 @@ int Spam::is_punct(const char c) const
   return (c == '.' || c == '?' || c == '!');
 }
 
-int Spam::get_Nsent(const std::list<std::string>& list) const
+int Spam::get_Nsent(const std::vector<std::string>& list) const
 {
   int Nsent = 0;
   bool end_of_sentence = false;

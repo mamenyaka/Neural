@@ -38,7 +38,6 @@
 #include <cctype>
 #include <iostream>
 #include <fstream>
-#include <list>
 #include <vector>
 #include <boost/algorithm/string.hpp>
 
@@ -62,23 +61,28 @@ public:
    * Return value: type of message procesed
    */
   int copy(double *input, const int n);
+  
+  void print_message(const int n);
+  void print_params(const int n);
 
 private:
-  typedef std::pair< std::list<std::string>, std::list<double> > Message;
+  typedef std::pair< std::vector<std::string>, std::vector<double> > Message;
   std::vector< std::pair<int, Message> > mails;
+  const int Nparams = 11;
 
   template<typename T>
-  void print(const std::list<T>& list, const char *s);
+  void print(const std::vector<T>& list, const char *s);
 
   /*
    * Return value: type of message read
    */
-  int read(std::list<std::string>& m, std::ifstream& be);
+  int read(std::vector<std::string>& m, std::ifstream& be);
 
   void get_params(Message& m);
+  void normalise();
 
   int is_punct(const char c) const;
-  int get_Nsent(const std::list<std::string>& list) const;
+  int get_Nsent(const std::vector<std::string>& list) const;
 };
 
 #endif  // SPAM_HPP
