@@ -1,0 +1,76 @@
+Start training.
+16 normal and 24 spam messages
+Number of training iterations: 100000
+End training.
+
+Start testing.
+4 normal and 18 spam messages
+
+
+Input: SPAM
+Output: 1
+
+Input: SPAM
+Output: 0.999999
+
+Input: NORMAL
+Output: 0.0877907
+
+Input: NORMAL
+Output: 9.26975e-07
+
+Input: SPAM
+Output: 0.998536
+
+Input: SPAM
+Output: 0.997332
+
+Input: SPAM
+Output: 1
+
+Input: SPAM
+Output: 0.879897
+
+Input: SPAM
+Output: 1
+
+Input: SPAM
+Output: 1
+
+Input: NORMAL
+Output: 0.891214
+
+Input: SPAM
+Output: 0.999947
+
+Input: SPAM
+Output: 0.999998
+
+Input: NORMAL
+Output: 0.00230046
+
+Input: SPAM
+Output: 1
+
+Input: SPAM
+Output: 1
+
+Input: SPAM
+Output: 1
+
+Input: SPAM
+Output: 0.501791
+
+Input: SPAM
+Output: 0.736173
+
+Input: SPAM
+Output: 0.865628
+
+Input: SPAM
+Output: 1
+
+Input: SPAM
+Output: 0.99985
+
+End testing.
