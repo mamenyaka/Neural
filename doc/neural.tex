@@ -155,4 +155,30 @@ A neurális hálózatokat nem olyan olyan széles körben elterjedtek, mint pél
 
 A hálózat működéséhez szükség van minta üzenetekre. Ezekről tudnunk kell, hogy spamek-e, a tanulás folyamán ugyanis ezek lesznek a várt kimenetek (1 ha spam, 0 ha nem). A bemeneti paramétereket az üzenetek szövegéből kell kiszámítanunk. Ezek alapján hasonlítja majd össze a neurális hálózat az üzeneteket és ez alapján próbálja spam és nem spam csoportokra bontani.
 
+\section{A program futtatása és a kimenet értelmzése}
+
+A program fordítása és futtatása az alábbi módon végezhető el:
+
+\lstset{language=Bash}
+\begin{lstlisting}
+andras@G53SW:~/Programs/Neural$ cmake .
+andras@G53SW:~/Programs/Neural$ make
+andras@G53SW:~/Programs/Neural$ ./neural
+\end{lstlisting}
+
+\lstinputlisting{output}
+
+A neurális hálót
+
+\lstset{language=C++}
+\begin{lstlisting}
+  const int Niter = 10000;
+\end{lstlisting}
+iteráción keresztül ``tanítattjuk'' 24 spam és 16 nem spam üzenettel, a bemenet az üzenetek paraméterei, a kimenet a hozzájuk tartozó  érték. Ez alapján állítódnak be az egyes neuronokhoz tartozó súlyok, amik kezdetben random értékek voltak. Ezután az éles tesztben ráengedjük a 4+18 független üzenetet és amint a fenti kimenetben látható, csupán 1 esetben kaptunk egy spam-re bizonytalan értéket (0.501791). Ebből jól látható, hogy a neurális hálónk megfelelően működik, megtanulta milyen paraméterek jellemzik a spam és nem spam üzeneteket.
+
+\section{Konklúzió}
+A projekt során a ma népszerű kutatási területnek számító neurális hálózattal foglalkoztunk. Megismerkedtünk az alapvető felépítésével és működésével ezekenek a gépi tanulást végző rendszereknek, valamint sikerült a spam mintát helyesen felismerő programot készítetnünk.
+
+A program letölthető a \url{https://github.com/mamenyaka/Neural} github tárolóból.
+
 \end{document}
