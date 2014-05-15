@@ -85,13 +85,13 @@ A Perceptron hálózatok a legegyszerűbb neurális hálózatok, melyekben a bem
 \end{figure}
 
 Az algoritmus a működése a során a bemeneti jelek ($x_{i}$) és a hozzájuk tartozó súlyok ($w_{i}$) alapján számolja ki a hálózat kimenetét. Az alábbi képlet szerint:
-$${ n = f(\sum_{i=0}^{m} x_{i}w_{i})}$$.
+$${ n = f(\sum_{i=0}^{m} x_{i}w_{i})},$$
 
-Ahol, 
+ahol
 \[ f(x) = \left\{
   \begin{array}{l l}
-    1 & \quad \textrm{,ha $x > t$}\\
-    0 & \quad \textrm{egyébként}
+    1, & \quad \textrm{ha $x > t$}\\
+    0, & \quad \textrm{egyébként}
   \end{array} \right.\]
 
 A hálózat inicializálásakor meg kell adnunk a súlyok kezdőértékét és a $t$ (threshold) értékét. A súlyoknak vagy 0-t, vagy véletlenszerűen választott kis érteket érdemes adni. Ezen kívül értéket kell adnunk még $r$-nek (learning rate). Ez egy 0 és 1 közé eső szám lehet. Amennyiben túl nagyra választjuk, a peceptron ingadozni fog a megoldás körül.
@@ -142,6 +142,7 @@ Az elektronikus üzenetküldés nagyon fontos részévé vált a mindennapi éle
     \item\textbf{rosszindulatú programok}  
 \end{itemize}
 
+\noindent
 A spam szűrési techinkákat működésük alapján így csoportosíthatjuk:
 \begin{itemize}
     \item\textbf{lista alapú szűrők:} Blacklist, Whitelist,
