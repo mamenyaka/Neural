@@ -25,4 +25,4 @@ Build
 Run
 ===
 
->$./test < spam
+>$ ./test < spam
